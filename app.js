@@ -1,6 +1,7 @@
 const express = require("express");
 const { users } = require("./model/index");
 const app = express();
+const bcrypt = require("bcryptjs");
 
 // database Connection
 require("./model/index");
@@ -29,7 +30,7 @@ app.post("/register", async (req, res) => {
   await users.create({
     email: email,
     username: username,
-    password: password,
+    password: bcrypt.hashSync(password, 8),
   });
   res.send("User registered successfully");
 });
