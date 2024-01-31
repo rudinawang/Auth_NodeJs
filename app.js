@@ -32,7 +32,37 @@ app.post("/register", async (req, res) => {
     username: username,
     password: bcrypt.hashSync(password, 8),
   });
-  res.send("User registered successfully");
+  res.redirect("/login");
+});
+
+// login
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  //1st step - tyo email vayeko kohi user table ma xa ki xaina check garney
+
+  const userExists = await users.findAll({
+    where: {
+      email: email,
+    },
+  });
+
+  if (userExists.length > 0) {
+    //2nd step - email check vayo abo password poni check garnu paryo
+    const isMatch = bcrypt.compareSync(password, userExists[0].password);
+    if (isMatch) {
+      res.send("Logged in Successfully");
+    } else {
+      res.send("Invalid Email or password");
+    }
+  } else {
+    //
+    res.send("Invalid Email or password");
+  }
 });
 
 app.listen(3000, function () {
